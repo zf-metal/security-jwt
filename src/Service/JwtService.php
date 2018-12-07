@@ -1,10 +1,10 @@
 <?php
 
-namespace Jwt\Service;
+namespace ZfMetal\SecurityJwt\Service;
 
 use Firebase\JWT\JWT;
-use Jwt\Exception\InvalidTokenSuppledException;
-use Jwt\Exception\InvalidUserLoggedInExcetion;
+use ZfMetal\SecurityJwt\Exception\InvalidTokenSuppledException;
+use ZfMetal\SecurityJwt\Exception\InvalidUserLoggedInExcetion;
 use ZfMetal\SecurityJwt\Options\ModuleOptions;
 
 class JwtService

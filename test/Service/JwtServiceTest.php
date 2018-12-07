@@ -1,9 +1,9 @@
 <?php
 
-namespace Test;
+namespace Test\Service;
 
 use PHPUnit\Framework\TestCase;
-use Jwt\Service\JwtService;
+use \ZfMetal\SecurityJwt\Service\JwtService;
 
 class JwtServiceTest extends TestCase
 {
@@ -49,7 +49,7 @@ class JwtServiceTest extends TestCase
 
     /**
      * @depends testGetToken
-     * @expectedException Jwt\Exception\InvalidTokenSuppledException
+     * @expectedException \ZfMetal\SecurityJwt\Exception\InvalidTokenSuppledException
      **/
     public function testCheckMethodWhenEmptyReturnAnError($token)
     {
@@ -58,7 +58,7 @@ class JwtServiceTest extends TestCase
 
     /**
      * @depends testGetToken
-     * @expectedException Jwt\Exception\InvalidUserLoggedInExcetion
+     * @expectedException \ZfMetal\SecurityJwt\Exception\InvalidUserLoggedInExcetion
      **/
     public function testCheckMethodWhenInvalidUserLoggedInReturnAnError($token)
     {

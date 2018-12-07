@@ -2,7 +2,7 @@
 
 namespace ZfMetal\SecurityJwt\Controller;
 
-use Jwt\Service\JwtService;
+use ZfMetal\SecurityJwt\Service\JwtService;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
@@ -20,6 +20,7 @@ class JwtController extends AbstractActionController {
      */
     protected $em;
 
+
     /**
      * JwtController constructor.
      * @param JwtService $jwtService
@@ -29,7 +30,9 @@ class JwtController extends AbstractActionController {
     {
         $this->jwtService = $jwtService;
         $this->em = $em;
+
     }
+
 
     /**
      * @return JwtService
@@ -38,6 +41,7 @@ class JwtController extends AbstractActionController {
     {
         return $this->jwtService;
     }
+
 
 
 
