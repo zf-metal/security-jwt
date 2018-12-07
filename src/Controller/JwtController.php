@@ -2,11 +2,13 @@
 
 namespace ZfMetal\SecurityJwt\Controller;
 
+use Zend\View\Model\JsonModel;
 use ZfMetal\SecurityJwt\Service\JwtService;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
-class JwtController extends AbstractActionController {
+class JwtController extends AbstractActionController
+{
 
     /**
      *
@@ -43,20 +45,17 @@ class JwtController extends AbstractActionController {
     }
 
 
-
-
-
-    function getEm() {
+    function getEm()
+    {
         return $this->em;
     }
 
 
-    public function loginAction() {
-
-    }
-
-    public function logoutAction() {
-
+    public function authAction()
+    {
+        var_dump("hola");die;
+        $v = new JsonModel(["status" =>true]);
+        return $v;
     }
 
 

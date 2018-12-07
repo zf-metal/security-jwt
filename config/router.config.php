@@ -1,6 +1,6 @@
 <?php
 
-namespace ZfMetal\Security;
+
 
 use Zend\Router\Http\Literal;
 use Zend\Router\Http\Segment;
@@ -8,13 +8,13 @@ use Zend\Router\Http\Segment;
 return [
     'router' => [
         'routes' => [
-            'zf-metal-jwt' => [
+            'zf-metal-jwt-auth' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/oauth',
+                    'route' => '/auth',
                     'defaults' => [
-                        'controller' => Controller\JwtController::class,
-                        'action' => 'oauth'
+                        'controller' => \ZfMetal\SecurityJwt\Controller\JwtController::class,
+                        'action' => 'auth'
                     ]
                 ],
             ]

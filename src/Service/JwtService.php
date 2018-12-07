@@ -32,7 +32,7 @@ class JwtService
         $this->encrypt = $this->options->getEncrypt();
     }
 
-    public function signIn(array $data = []): String
+    public function signIn(array $data = [])
     {
         $time = time();
 
@@ -45,7 +45,7 @@ class JwtService
         return JWT::encode($token, $this->getSecretKey());
     }
 
-    public function getData(String $token): Array
+    public function getData(String $token)
     {
         return JWT::decode(
             $token,
@@ -54,7 +54,7 @@ class JwtService
         )->data;
     }
 
-    public function checkToken(String $token = null): bool
+    public function checkToken(String $token = null)
     {
         if (empty($token)) {
             throw new InvalidTokenSuppledException("Invalid token supplied.");
@@ -86,19 +86,19 @@ class JwtService
      *
      * @return array
      */
-    private function getEncrypt(): Array
+    private function getEncrypt()
     {
         return $this->encrypt;
     }
 
     // This is only for test testCheckMethodWhenInvalidUserLoggedInReturnAnError
-    public function changeAud(): JwtService
+    public function changeAud()
     {
         $this->aud = rand(1, 100);
         return $this;
     }
 
-    private function getAud(): String
+    private function getAud()
     {
         $aud = '';
 
