@@ -1,0 +1,7 @@
+<phpunit bootstrap="src/autoload.php" colors="true">
+<testsuites>
+    <testsuite name="Jwt\\Test">
+        <directory>./test</directory>
+    </testsuite>
+</testsuites>
+</phpunit>
