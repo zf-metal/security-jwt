@@ -7,5 +7,6 @@ return array_merge_recursive(
     include 'options.config.php',
     include 'controller.config.php',
     include 'services.config.php',
-    include 'view.config.php'
+    include 'view.config.php',
+    include 'plugins.config.php'
 );

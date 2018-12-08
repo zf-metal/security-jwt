@@ -2,13 +2,13 @@
 
 namespace ZfMetal\SecurityJwt\Controller;
 
-use http\Exception\BadMethodCallException;
+
 use Zend\View\Model\JsonModel;
 use ZfMetal\SecurityJwt\Response\JwtResponse;
 use ZfMetal\SecurityJwt\Service\DoctrineAuth;
 use ZfMetal\SecurityJwt\Service\JwtService;
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
+
 
 class JwtController extends AbstractActionController
 {
