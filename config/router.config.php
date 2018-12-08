@@ -9,9 +9,11 @@ return [
     'router' => [
         'routes' => [
             'zf-metal-jwt-auth' => [
-                'type' => Literal::class,
+                'type' => \Zend\Router\Http\Method::class,
+
                 'options' => [
                     'route' => '/auth',
+                    'verb' => 'post',
                     'defaults' => [
                         'controller' => \ZfMetal\SecurityJwt\Controller\JwtController::class,
                         'action' => 'auth'

@@ -2,6 +2,7 @@
 
 namespace ZfMetal\SecurityJwt\Controller;
 
+use http\Exception\BadMethodCallException;
 use Zend\View\Model\JsonModel;
 use ZfMetal\SecurityJwt\Service\JwtService;
 use Zend\Mvc\Controller\AbstractActionController;
@@ -53,7 +54,13 @@ class JwtController extends AbstractActionController
 
     public function authAction()
     {
-        var_dump("hola");die;
+
+        //CHECK POST
+        if(!$this->getRequest()->isPost()){
+            //throw new \Exception("Method Not Allowed");
+        }
+
+
         $v = new JsonModel(["status" =>true]);
         return $v;
     }
