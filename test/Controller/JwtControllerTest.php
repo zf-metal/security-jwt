@@ -1,58 +1,69 @@
 <?php
+
 namespace Test\Controller;
+
+use Doctrine\ORM\EntityManager;
 use PHPUnit\Framework\TestCase;
+use Zend\Http\Request;
+use Zend\ServiceManager\ServiceManager;
 use ZfMetal\SecurityJwt\Controller\JwtController;
+use ZfMetal\SecurityJwt\Options\ModuleOptions;
 use ZfMetal\SecurityJwt\Service\JwtService;
 use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+
 class JwtControllerTest extends AbstractHttpControllerTestCase
 {
-    protected $em;
+    protected $mockedEm;
     protected $jwtService;
 
-    public function setUp(){
-        $this->em = $this->createMock(\Doctrine\ORM\EntityManager::class);
-        $options = new \ZfMetal\SecurityJwt\Options\ModuleOptions();
-        $options->setSecretKey("123");
-        $options->setEncrypt(['HS256']);
-        $this->jwtService = new JwtService($options);
-    }
+    /**
+     * @var JwtController
+     */
+    protected $controller;
 
-        public function tearDown() {
-            $this->http = null;
-        }
-    public function testCreateInstanfeOfJwtController(){
-        $jwtController = new JwtController($this->getJwtService(),$this->getEm());
-        $this->assertInstanceOf(JwtController::class, $jwtController);
-
-        return $jwtController;
-    }
-
-    public function testIfGetIsNotAllowed()
+    /**
+     * Inicializo el MVC
+     */
+    public function setUp()
     {
-      //  $this->getRequest()->setMethod("GET");
-      //  $this->dispatch(self::URL);
-      //  $response = $this->getResponse();
-      //  $this->assertEquals(404, $response->getStatusCode());
+        $this->setApplicationConfig(
+            include __DIR__.'/../config/application.config.php'
+        );
+        parent::setUp();
+        $this->configureServiceManager($this->getApplicationServiceLocator());
     }
 
     /**
-     * Get the value of Em
+     * Mockeo el EntityManager sobre el contenedor de servicios
+     * @param ServiceManager $services
      *
-     * @return \Doctrine\ORM\EntityManager
      */
-    private function getEm()
+    protected function configureServiceManager(ServiceManager $services)
     {
-        return $this->em;
+        $services->setAllowOverride(true);
+        $this->mockedEm = $this->createMock(EntityManager::class);
+        $services->setService(EntityManager::class, $this->mockedEm);
+        $services->setAllowOverride(false);
+    }
+
+
+    /**
+     * Verico que con metodo GET obtengo 404 not found
+     *
+     */
+    public function testAuthActionGet404()
+    {
+        $this->dispatch("/auth","GET",['username' => 'pargento']);
+        $this->assertResponseStatusCode(404);
     }
 
     /**
-     * Get the value of Jwt Service
-     *
-     * @return ZfMetal\SecurityJwt\Service\JwtService
+     * Verifico que con metodo POST obtengo 200 ok
      */
-    private function getJwtService()
+    public function testAuthActionPost200()
     {
-        return $this->jwtService;
+        $this->dispatch("/auth","POST",['username' => 'pargento']);
+        $this->assertResponseStatusCode(200);
     }
 
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace ZfMetal\SecurityJwt\Factory\Services;
+namespace ZfMetal\SecurityJwt\Factory\Service;
 
 use Interop\Container\ContainerInterface;
-use Jwt\Service\JwtService;
 use Zend\ServiceManager\Factory\FactoryInterface;
+use ZfMetal\SecurityJwt\Service\JwtService;
 
 
 class JwtServiceFactory implements FactoryInterface

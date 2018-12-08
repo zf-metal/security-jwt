@@ -32,7 +32,7 @@ class JwtService
         $this->encrypt = $this->options->getEncrypt();
     }
 
-    public function signIn(array $data = []): String
+    public function signIn(array $data = [])
     {
         $time = time();
 
@@ -45,7 +45,7 @@ class JwtService
         return JWT::encode($token, $this->getSecretKey());
     }
 
-    public function getData(String $token): Array
+    public function getData($token)
     {
         return JWT::decode(
             $token,
@@ -54,7 +54,7 @@ class JwtService
         )->data;
     }
 
-    public function checkToken(String $token = null): bool
+    public function checkToken( $token = null)
     {
         if (empty($token)) {
             throw new InvalidTokenSuppledException("Invalid token supplied.");
@@ -86,19 +86,19 @@ class JwtService
      *
      * @return array
      */
-    private function getEncrypt(): Array
+    private function getEncrypt()
     {
         return $this->encrypt;
     }
 
     // This is only for test testCheckMethodWhenInvalidUserLoggedInReturnAnError
-    public function changeAud(): JwtService
+    public function changeAud()
     {
         $this->aud = rand(1, 100);
         return $this;
     }
 
-    private function getAud(): String
+    private function getAud()
     {
         $aud = '';
 
@@ -106,8 +106,12 @@ class JwtService
             $aud = $_SERVER['HTTP_CLIENT_IP'];
         } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             $aud = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+            $aud = $_SERVER['REMOTE_ADDR'];
+        } elseif (isset($_SERVER['HOSTNAME'])) {
+            $aud = $_SERVER['HOSTNAME'];
         } else {
-            $aud = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : $_SERVER['HOSTNAME'];
+            $aud = 'LOCAL';
         }
 
         $aud .= @$_SERVER['HTTP_USER_AGENT'];
