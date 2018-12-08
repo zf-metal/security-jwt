@@ -9,7 +9,7 @@ use ZfMetal\SecurityJwt\Options\ModuleOptions;
 
 class JwtService
 {
-    private $secret_key = 'MaYzkSjmkzPC57L';
+    private $secret_key;
     private $encrypt = ['HS256'];
 
     /**

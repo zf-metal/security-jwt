@@ -8,16 +8,12 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 use ZfMetal\SecurityJwt\Service\DoctrineAuth;
 use ZfMetal\SecurityJwt\Service\JwtService;
 
-class JwtControllerFactory implements FactoryInterface
+class ProtectedControllerFactory implements FactoryInterface
 {
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $jwtService = $container->get(JwtService::class);
-        $em = $container->get(EntityManager::class);
-        $doctrineAuth =  $container->get(DoctrineAuth::class);
-
-        return new \ZfMetal\SecurityJwt\Controller\JwtController($jwtService,$doctrineAuth,$em);
+        return new \ZfMetal\SecurityJwt\Controller\ProtectedController();
     }
 
 }

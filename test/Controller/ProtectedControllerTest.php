@@ -14,7 +14,7 @@ use ZfMetal\SecurityJwt\Options\ModuleOptions;
 use ZfMetal\SecurityJwt\Service\JwtService;
 use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
-class JwtControllerTest extends AbstractHttpControllerTestCase
+class ProtectedControllerTest extends AbstractHttpControllerTestCase
 {
 
 
@@ -86,77 +86,13 @@ class JwtControllerTest extends AbstractHttpControllerTestCase
     }
 
     /**
-     * Verico que con metodo GET obtengo 404 not found
+     * Verifico un controlador protegido sin token
      */
-    public function testAuthActionGet404notFound()
+    public function testProtectedControllerWhithoutToken()
     {
-        $this->dispatch("/auth", "GET", ['username' => 'pargento']);
-        $this->assertResponseStatusCode(404);
-    }
+        $this->dispatch("/protected", "POST");
 
-    /**
-     * Verico que con metodo POST obtengo 200 ok
-     */
-    public function testAuthActionPost200ok()
-    {
-        $this->dispatch("/auth", "POST");
-        $this->assertResponseStatusCode(200);
-    }
-
-    /**
-     * Verico que falta los parametros usuario y password
-     */
-    public function testAuthActionMissingParams()
-    {
-        $this->dispatch("/auth", "POST");
-        $this->assertResponseStatusCode(200);
-
-        $json = [
-            'success' => false,
-            'message' => "Missing Params. username and password required."
-        ];
-
-        $this->assertJsonStringEqualsJsonString($this->getResponse()->getContent(), json_encode($json));
-    }
-
-
-    /**
-     * Verico credenciales invalidas
-     */
-    public function testAuthActionInvalidCredentials()
-    {
-        $this->dispatch("/auth", "POST", ['username' => 'userInvalid', 'password' => 'invalidPassword']);
-        $this->assertResponseStatusCode(200);
-
-        $json = [
-            'success' => false,
-            'message' => "Invalid Credentials"
-        ];
-
-        $jsonResponse = $this->getResponse()->getContent();
-        $this->assertJsonStringEqualsJsonString($jsonResponse, json_encode($json));
-    }
-
-    /**
-     * Verifico credenciales validas
-     */
-    public function testAuthActionValidCredentials()
-    {
-        $this->dispatch("/auth", "POST", ['username' => 'userValid', 'password' => 'validPassword']);
-
-        $this->assertResponseStatusCode(200);
-
-
-        $json = [
-            'success' => true,
-            'message' => 'Authentication successful',
-        ];
-
-        $jsonResponse = $this->getResponse()->getContent();
-        $jsonDecode = json_decode($jsonResponse);
-
-        $this->assertEquals($jsonDecode->success,$json['success']);
-        $this->assertEquals($jsonDecode->message,$json['message']);
+        $this->assertResponseStatusCode(401);
     }
 
 }
