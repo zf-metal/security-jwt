@@ -5,7 +5,7 @@ namespace ZfMetal\SecurityJwt\Factory\Controller;
 use Doctrine\ORM\EntityManager;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use ZfMetal\SecurityJwt\Service\DoctrineAuth;
+use ZfMetal\SecurityJwt\Service\JwtDoctrineAuth;
 use ZfMetal\SecurityJwt\Service\JwtService;
 
 class JwtControllerFactory implements FactoryInterface
@@ -15,7 +15,7 @@ class JwtControllerFactory implements FactoryInterface
     {
         $jwtService = $container->get(JwtService::class);
         $em = $container->get(EntityManager::class);
-        $doctrineAuth =  $container->get(DoctrineAuth::class);
+        $doctrineAuth =  $container->get(JwtDoctrineAuth::class);
 
         return new \ZfMetal\SecurityJwt\Controller\JwtController($jwtService,$doctrineAuth,$em);
     }

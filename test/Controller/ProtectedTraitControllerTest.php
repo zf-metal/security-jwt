@@ -14,9 +14,8 @@ use ZfMetal\SecurityJwt\Options\ModuleOptions;
 use ZfMetal\SecurityJwt\Service\JwtService;
 use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
-class ProtectedControllerTest extends AbstractHttpControllerTestCase
+class ProtectedTraitControllerTest extends AbstractHttpControllerTestCase
 {
-
 
 
     /**
@@ -31,12 +30,13 @@ class ProtectedControllerTest extends AbstractHttpControllerTestCase
     }
 
 
+
     /**
      * Verifico un controlador protegido sin token
      */
     public function testProtectedControllerWhithoutToken()
     {
-        $this->dispatch("/protected", "POST");
+        $this->dispatch("/protected-trait", "POST");
 
         $this->assertResponseStatusCode(401);
     }
