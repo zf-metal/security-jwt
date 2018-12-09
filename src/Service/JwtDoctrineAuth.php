@@ -14,7 +14,7 @@ use ZfMetal\Security\Entity\User;
 use ZfMetal\Security\Repository\UserRepository;
 use ZfMetal\SecurityJwt\Response\DoctrineAuthResponse;
 
-class DoctrineAuth
+class JwtDoctrineAuth
 {
 
 
@@ -25,7 +25,7 @@ class DoctrineAuth
     protected $em;
 
     /**
-     * DoctrineAuth constructor.
+     * JwtDoctrineAuth constructor.
      * @param \Doctrine\ORM\EntityManager $em
      */
     public function __construct(\Doctrine\ORM\EntityManager $em)

@@ -8,7 +8,7 @@ class ProtectedController extends AbstractProtectedController
 
     public function protectedAction()
     {
-        return ["message" => "protected action"];
+        return ["message" => "Protected by AbstractProtected"];
     }
 
 

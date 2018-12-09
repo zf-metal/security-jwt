@@ -5,7 +5,8 @@ return [
         'factories' => [
             'zf-metal-security-jwt.options' => \ZfMetal\SecurityJwt\Factory\Options\ModuleOptionsFactory::class,
             \ZfMetal\SecurityJwt\Service\JwtService::class => \ZfMetal\SecurityJwt\Factory\Service\JwtServiceFactory::class,
-            \ZfMetal\SecurityJwt\Service\DoctrineAuth::class => \ZfMetal\SecurityJwt\Factory\Service\DoctrineAuthFactory::class
+            \ZfMetal\SecurityJwt\Service\JwtDoctrineAuth::class => \ZfMetal\SecurityJwt\Factory\Service\JwtDoctrineAuthFactory::class,
+            \ZfMetal\SecurityJwt\Service\JwtDoctrineIdentity::class => \ZfMetal\SecurityJwt\Factory\Service\JwtDoctrineIdentityFactory::class
         ]
     ]
 ];

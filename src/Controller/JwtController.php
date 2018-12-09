@@ -4,12 +4,19 @@ namespace ZfMetal\SecurityJwt\Controller;
 
 
 use Zend\View\Model\JsonModel;
+use ZfMetal\Security\Entity\User;
+use ZfMetal\SecurityJwt\Controller\Plugin\JwtIdentity;
 use ZfMetal\SecurityJwt\Response\JwtResponse;
-use ZfMetal\SecurityJwt\Service\DoctrineAuth;
+use ZfMetal\SecurityJwt\Service\JwtDoctrineAuth;
 use ZfMetal\SecurityJwt\Service\JwtService;
 use Zend\Mvc\Controller\AbstractActionController;
 
 
+/**
+ * Class JwtController
+ * @method JwtIdentity getJwtIdentity
+ * @package ZfMetal\SecurityJwt\Controller
+ */
 class JwtController extends AbstractActionController
 {
 
@@ -21,7 +28,7 @@ class JwtController extends AbstractActionController
 
 
     /**
-     * @var DoctrineAuth
+     * @var JwtDoctrineAuth
      */
     protected $doctrineAuth;
 
@@ -36,10 +43,10 @@ class JwtController extends AbstractActionController
     /**
      * JwtController constructor.
      * @param JwtService $jwtService
-     * @param DoctrineAuth $doctrineAuth
+     * @param JwtDoctrineAuth $doctrineAuth
      * @param \Doctrine\ORM\EntityManager $em
      */
-    public function __construct(JwtService $jwtService, DoctrineAuth $doctrineAuth, \Doctrine\ORM\EntityManager $em)
+    public function __construct(JwtService $jwtService, JwtDoctrineAuth $doctrineAuth, \Doctrine\ORM\EntityManager $em)
     {
         $this->jwtService = $jwtService;
         $this->doctrineAuth = $doctrineAuth;
@@ -71,13 +78,14 @@ class JwtController extends AbstractActionController
         $password = $this->getRequest()->getPost('password');
 
         if (!$username || !$password) {
+            $this->getResponse()->setStatusCode(422);
             $jwtResponse->setMessage("Missing Params. username and password required.");
-        }else {
+        } else {
 
             //Autentico con Doctrine
             $doctrineAuthResponse = $this->doctrineAuth->authenticate($username, $password);
 
-            //Traslado el mensaje y resultado obtendido en DoctrineAuth a la JwtResponse
+            //Traslado el mensaje y resultado obtendido en JwtDoctrineAuth a la JwtResponse
             $jwtResponse->setMessage($doctrineAuthResponse->getMessage());
             $jwtResponse->setSuccess($doctrineAuthResponse->isSuccess());
 
@@ -94,12 +102,33 @@ class JwtController extends AbstractActionController
 
                 //Seteo el token generado a jwtResponse
                 $jwtResponse->setToken($token);
+            }else{
+                $this->getResponse()->setStatusCode(401);
             }
 
         }
 
         //Retorno la jwtResponse claves: success, message, token(si se genera) en formato JSON
         return new JsonModel($jwtResponse->toArray());
+
+    }
+
+
+    public function myIdentityAction()
+    {
+        /** @var User $user */
+        $user = $this->getJwtIdentity();
+
+        if($user) {
+            $json = [
+                'id' => $user->getId(),
+                'username' => $user->getUsername()
+            ];
+        }else{
+           return $this->getResponse()->setStatusCode(401);
+        }
+
+        return new JsonModel($json);
 
     }
 

@@ -6,27 +6,29 @@ use Doctrine\ORM\EntityManager;
 
 use PHPUnit\Framework\TestCase;
 use Zend\Crypt\Password\Bcrypt;
+use Zend\Http\Headers;
 use Zend\Http\Request;
 use Zend\ServiceManager\ServiceManager;
+use ZendTest\Http\HeadersTest;
 use ZfMetal\Security\Repository\UserRepository;
 use ZfMetal\SecurityJwt\Controller\JwtController;
 use ZfMetal\SecurityJwt\Options\ModuleOptions;
 use ZfMetal\SecurityJwt\Service\JwtService;
 use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
+/**
+ * Class JwtControllerTest
+ * @method Request getRequest()
+ * @package Test\Controller
+ */
 class JwtControllerTest extends AbstractHttpControllerTestCase
 {
 
 
     protected $mockedEm;
     protected $mockedUserRepository;
+    protected $mockedUser;
 
-    protected $jwtService;
-
-    /**
-     * @var JwtController
-     */
-    protected $controller;
 
     /**
      * Inicializo el MVC
@@ -63,7 +65,7 @@ class JwtControllerTest extends AbstractHttpControllerTestCase
         $this->mockedEm->method('getRepository')
             ->willReturn($this->mockedUserRepository);
 
-        //Mock method getAuthenticateByEmailOrUsername
+        //Mock method getAuthenticateByEmailOrUsername on UserRepository
         $map = [
             ['userInvalid', null],
             ['userValid', $this->getMockUser()]
@@ -71,18 +73,30 @@ class JwtControllerTest extends AbstractHttpControllerTestCase
         $this->mockedUserRepository->method('getAuthenticateByEmailOrUsername')
             ->will($this->returnValueMap($map));
 
+        //Mock method find on UserRepository
+        $mapFind = [
+            [null, null],
+            [1, $this->getMockUser()]
+        ];
+        $this->mockedUserRepository->method('find')
+            ->willReturn($this->getMockUser());
+          //  ->will($this->returnValueMap($mapFind));
+
         return $this->mockedEm;
     }
 
     public function getMockUser()
     {
-        $user = new \ZfMetal\Security\Entity\User();
-        $user->setUsername("userValid");
-        $user->setActive(true);
-        $bcrypt = new Bcrypt(['cost' => 12]);
-        $password = $bcrypt->create("validPassword");
-        $user->setPassword($password);
-        return $user;
+        if (!$this->mockedUser) {
+            $this->mockedUser = new \ZfMetal\Security\Entity\User();
+            $this->mockedUser->setId(1);
+            $this->mockedUser->setUsername("userValid");
+            $this->mockedUser->setActive(true);
+            $bcrypt = new Bcrypt(['cost' => 12]);
+            $password = $bcrypt->create("validPassword");
+            $this->mockedUser->setPassword($password);
+        }
+        return $this->mockedUser;
     }
 
     /**
@@ -90,18 +104,11 @@ class JwtControllerTest extends AbstractHttpControllerTestCase
      */
     public function testAuthActionGet404notFound()
     {
-        $this->dispatch("/auth", "GET", ['username' => 'pargento']);
+        $this->dispatch("/auth", "GET");
         $this->assertResponseStatusCode(404);
     }
 
-    /**
-     * Verico que con metodo POST obtengo 200 ok
-     */
-    public function testAuthActionPost200ok()
-    {
-        $this->dispatch("/auth", "POST");
-        $this->assertResponseStatusCode(200);
-    }
+
 
     /**
      * Verico que falta los parametros usuario y password
@@ -109,13 +116,14 @@ class JwtControllerTest extends AbstractHttpControllerTestCase
     public function testAuthActionMissingParams()
     {
         $this->dispatch("/auth", "POST");
-        $this->assertResponseStatusCode(200);
+
 
         $json = [
             'success' => false,
             'message' => "Missing Params. username and password required."
         ];
 
+        $this->assertResponseStatusCode(422);
         $this->assertJsonStringEqualsJsonString($this->getResponse()->getContent(), json_encode($json));
     }
 
@@ -126,7 +134,7 @@ class JwtControllerTest extends AbstractHttpControllerTestCase
     public function testAuthActionInvalidCredentials()
     {
         $this->dispatch("/auth", "POST", ['username' => 'userInvalid', 'password' => 'invalidPassword']);
-        $this->assertResponseStatusCode(200);
+
 
         $json = [
             'success' => false,
@@ -134,7 +142,9 @@ class JwtControllerTest extends AbstractHttpControllerTestCase
         ];
 
         $jsonResponse = $this->getResponse()->getContent();
+        $this->assertResponseStatusCode(401);
         $this->assertJsonStringEqualsJsonString($jsonResponse, json_encode($json));
+
     }
 
     /**
@@ -155,8 +165,38 @@ class JwtControllerTest extends AbstractHttpControllerTestCase
         $jsonResponse = $this->getResponse()->getContent();
         $jsonDecode = json_decode($jsonResponse);
 
-        $this->assertEquals($jsonDecode->success,$json['success']);
-        $this->assertEquals($jsonDecode->message,$json['message']);
+        //save last token
+        file_put_contents(__DIR__ . '/../data/token.txt', $jsonDecode->token);
+
+        $this->assertEquals($jsonDecode->success, $json['success']);
+        $this->assertEquals($jsonDecode->message, $json['message']);
     }
 
+
+    /**
+     * Obtengo la identidad haciendo una request con un token valido pre guardado
+     */
+    public function testIdentityAction()
+    {
+
+        $token = file_get_contents(__DIR__ . '/../data/token.txt');
+        $headers = new Headers();
+        $headers->addHeaderLine('Authorization', 'Bearer ' . $token);
+
+        $this->getRequest()
+            ->setMethod("get")
+            ->setHeaders($headers);
+
+        $this->dispatch("/my-identity");
+
+        $json = [
+            'id' => 1,
+            'username' => 'userValid'
+        ];
+
+        $result = $this->getResponse()->getContent();
+
+        $this->assertResponseStatusCode(200);
+        $this->assertJsonStringEqualsJsonString($result, json_encode($json));
+    }
 }

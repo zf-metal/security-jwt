@@ -24,6 +24,12 @@ class ModuleOptions extends AbstractOptions
     protected $encrypt = ['HS256'];
 
     /**
+     * Expiry Time in Seconds
+     * @var int
+     */
+    protected $expiryTime = 3600;
+
+    /**
      * @return string
      */
     public function getSecretKey()
@@ -53,6 +59,22 @@ class ModuleOptions extends AbstractOptions
     public function setEncrypt($encrypt)
     {
         $this->encrypt = $encrypt;
+    }
+
+    /**
+     * @return int
+     */
+    public function getExpiryTime()
+    {
+        return $this->expiryTime;
+    }
+
+    /**
+     * @param int $expiryTime
+     */
+    public function setExpiryTime($expiryTime)
+    {
+        $this->expiryTime = $expiryTime;
     }
 
 

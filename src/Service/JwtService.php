@@ -11,6 +11,7 @@ class JwtService
 {
     private $secret_key;
     private $encrypt = ['HS256'];
+    private $expiryTime = 3600;
 
     /**
      * @var ModuleOptions
@@ -30,6 +31,7 @@ class JwtService
         $this->options = $options;
         $this->secret_key = $this->options->getSecretKey();
         $this->encrypt = $this->options->getEncrypt();
+        $this->expiryTime = $this->options->getExpiryTime();
     }
 
     public function signIn(array $data = [])
@@ -37,7 +39,7 @@ class JwtService
         $time = time();
 
         $token = [
-            'exp' => $time + (60 * 60),
+            'exp' => $time + $this->getExpiryTime(),
             'aud' => $this->getAud(),
             'data' => $data
         ];
@@ -54,7 +56,7 @@ class JwtService
         )->data;
     }
 
-    public function checkToken( $token = null)
+    public function checkToken($token = null)
     {
         if (empty($token)) {
             throw new InvalidTokenSuppledException("Invalid token supplied.");
@@ -90,6 +92,16 @@ class JwtService
     {
         return $this->encrypt;
     }
+
+    /**
+     * @return int
+     */
+    public function getExpiryTime()
+    {
+        return $this->expiryTime;
+    }
+
+
 
     // This is only for test testCheckMethodWhenInvalidUserLoggedInReturnAnError
     public function changeAud()
