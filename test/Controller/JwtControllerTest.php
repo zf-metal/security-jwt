@@ -5,6 +5,7 @@ namespace Test\Controller;
 use Doctrine\ORM\EntityManager;
 
 use PHPUnit\Framework\TestCase;
+use Test\Service\JwtServiceTest;
 use Zend\Crypt\Password\Bcrypt;
 use Zend\Http\Headers;
 use Zend\Http\Request;
@@ -23,6 +24,7 @@ use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
  */
 class JwtControllerTest extends AbstractHttpControllerTestCase
 {
+    Const REGEX_TOKEN = '/^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?$/';
 
 
     protected $mockedEm;
@@ -165,21 +167,25 @@ class JwtControllerTest extends AbstractHttpControllerTestCase
         $jsonResponse = $this->getResponse()->getContent();
         $jsonDecode = json_decode($jsonResponse);
 
-        //save last token
-        file_put_contents(__DIR__ . '/../data/token.txt', $jsonDecode->token);
 
         $this->assertEquals($jsonDecode->success, $json['success']);
         $this->assertEquals($jsonDecode->message, $json['message']);
+        $this->assertRegExp(self::REGEX_TOKEN, $jsonDecode->token);
+
+        return $jsonDecode->token;
     }
 
 
     /**
+     * @depends testAuthActionValidCredentials
      * Obtengo la identidad haciendo una request con un token valido pre guardado
+     * @param $token
+     * @throws \Exception
      */
-    public function testIdentityAction()
+    public function testIdentityAction($token)
     {
 
-        $token = file_get_contents(__DIR__ . '/../data/token.txt');
+
         $headers = new Headers();
         $headers->addHeaderLine('Authorization', 'Bearer ' . $token);
 
@@ -195,7 +201,7 @@ class JwtControllerTest extends AbstractHttpControllerTestCase
         ];
 
         $result = $this->getResponse()->getContent();
-
+        var_dump($result);
         $this->assertResponseStatusCode(200);
         $this->assertJsonStringEqualsJsonString($result, json_encode($json));
     }
