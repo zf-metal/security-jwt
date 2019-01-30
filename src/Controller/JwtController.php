@@ -68,6 +68,17 @@ class JwtController extends AbstractActionController
         return $this->em;
     }
 
+    private function getImgFullPath()
+    {
+        $baseUrl = "";
+        try {
+            $baseUrl = $this->getSecurityOptions()->getHttpHost();
+        } catch (\Exception $e) {
+
+        }
+        return $baseUrl;
+    }
+
 
     public function authAction()
     {
@@ -93,13 +104,17 @@ class JwtController extends AbstractActionController
             //Si la autenticacion de doctrine es positiva genero el token
             if ($doctrineAuthResponse->isSuccess()) {
 
+                $img = $this->getSecurityOptions()->getHttpHost() .
+                    \ZfMetal\Security\Constants::IMG_RELATIVE_PATH .
+                    $doctrineAuthResponse->getUser()->getImg();
+
                 $data = [
                     'id' => $doctrineAuthResponse->getUser()->getId(),
                     'username' => $doctrineAuthResponse->getUser()->getUsername(),
                     'name' => $doctrineAuthResponse->getUser()->getName(),
                     'email' => $doctrineAuthResponse->getUser()->getEmail(),
                     'phone' => $doctrineAuthResponse->getUser()->getPhone(),
-                    'img' => $doctrineAuthResponse->getUser()->getImg(),
+                    'img' => $img,
 
                 ];
 
@@ -107,7 +122,7 @@ class JwtController extends AbstractActionController
 
                 //Seteo el token generado a jwtResponse
                 $jwtResponse->setToken($token);
-            }else{
+            } else {
                 $this->getResponse()->setStatusCode(401);
             }
 
@@ -124,13 +139,13 @@ class JwtController extends AbstractActionController
         /** @var User $user */
         $user = $this->getJwtIdentity();
 
-        if($user) {
+        if ($user) {
             $json = [
                 'id' => $user->getId(),
                 'username' => $user->getUsername()
             ];
-        }else{
-           return $this->getResponse()->setStatusCode(401);
+        } else {
+            return $this->getResponse()->setStatusCode(401);
         }
 
         return new JsonModel($json);
