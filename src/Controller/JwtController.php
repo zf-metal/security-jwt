@@ -96,6 +96,11 @@ class JwtController extends AbstractActionController
                 $data = [
                     'id' => $doctrineAuthResponse->getUser()->getId(),
                     'username' => $doctrineAuthResponse->getUser()->getUsername(),
+                    'name' => $doctrineAuthResponse->getUser()->getName(),
+                    'email' => $doctrineAuthResponse->getUser()->getEmail(),
+                    'phone' => $doctrineAuthResponse->getUser()->getPhone(),
+                    'img' => $doctrineAuthResponse->getUser()->getImg(),
+
                 ];
 
                 $token = $this->getJwtService()->signIn($data);
