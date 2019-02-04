@@ -4,6 +4,8 @@ namespace ZfMetal\SecurityJwt\Controller;
 
 
 use Zend\View\Model\JsonModel;
+use ZfMetal\Security\Entity\Permission;
+use ZfMetal\Security\Entity\Role;
 use ZfMetal\Security\Entity\User;
 use ZfMetal\SecurityJwt\Controller\Plugin\JwtIdentity;
 use ZfMetal\SecurityJwt\Response\JwtResponse;
@@ -108,6 +110,24 @@ class JwtController extends AbstractActionController
                     \ZfMetal\Security\Constants::IMG_RELATIVE_PATH .
                     $doctrineAuthResponse->getUser()->getImg();
 
+                $roles = [];
+
+                /**
+                 * @var $role Role
+                 */
+                foreach($doctrineAuthResponse->getUser()->getRoles() as $role){
+
+                    $permissions= [];
+
+                    /** @var Permission $permission */
+                    foreach($role->getPermissions() as $permission){
+                        $permissions[] = $permission->getName();
+                    }
+
+                    $roles[] = ["id" => $role->getId(), "name"=> $role->getName(), "permissions" => $permissions];
+                }
+
+
                 $data = [
                     'id' => $doctrineAuthResponse->getUser()->getId(),
                     'username' => $doctrineAuthResponse->getUser()->getUsername(),
@@ -115,6 +135,8 @@ class JwtController extends AbstractActionController
                     'email' => $doctrineAuthResponse->getUser()->getEmail(),
                     'phone' => $doctrineAuthResponse->getUser()->getPhone(),
                     'img' => $img,
+                    'roles' => $doctrineAuthResponse->getUser()->getRoles()->toArray(),
+                    'roles' => $roles
 
                 ];
 
