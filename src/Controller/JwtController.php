@@ -106,9 +106,11 @@ class JwtController extends AbstractActionController
             //Si la autenticacion de doctrine es positiva genero el token
             if ($doctrineAuthResponse->isSuccess()) {
 
-                $img = $this->getSecurityOptions()->getHttpHost() .
-                    \ZfMetal\Security\Constants::IMG_RELATIVE_PATH .
-                    $doctrineAuthResponse->getUser()->getImg();
+                if($doctrineAuthResponse->getUser()->getImg()) {
+                    $img = $this->getSecurityOptions()->getHttpHost() .
+                        \ZfMetal\Security\Constants::IMG_RELATIVE_PATH .
+                        $doctrineAuthResponse->getUser()->getImg();
+                }
 
                 $roles = [];
 
@@ -134,11 +136,13 @@ class JwtController extends AbstractActionController
                     'name' => $doctrineAuthResponse->getUser()->getName(),
                     'email' => $doctrineAuthResponse->getUser()->getEmail(),
                     'phone' => $doctrineAuthResponse->getUser()->getPhone(),
-                    'img' => $img,
                     'roles' => $doctrineAuthResponse->getUser()->getRoles()->toArray(),
                     'roles' => $roles
-
                 ];
+
+                if(isset($img)){
+                    $data['img'] =  $img;
+                }
 
                 $token = $this->getJwtService()->signIn($data);
 
